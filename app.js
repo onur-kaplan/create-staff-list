@@ -1,4 +1,5 @@
-const dbName = "people";
+let addPerson = (function(){
+    const dbName = "people";
 const name = document.querySelector('#name');
 const surName = document.querySelector('#surName');
 const phone = document.querySelector('#phone');
@@ -45,7 +46,7 @@ function addPersonToList(person) {
         <td>${person.name}</td>
         <td>${person.surName}</td>
         <td>${person.phone}</td>
-        <td class="remove-btn">Sil</td>
+        <td class="text-right"><span class="remove-btn  btn btn-danger">X</span> </td>
      </tr>    
 `;
     list.innerHTML += html;
@@ -80,10 +81,10 @@ addPersonBtn.addEventListener('click',function(){
 
 list.addEventListener("click", function(e){
     let targetElm = e.target;
-    let itemId = targetElm.parentElement.getAttribute("id");
+    let itemId = targetElm.parentElement.parentElement.getAttribute("id");
     let db = new DBManager();
     if(targetElm.classList.contains("remove-btn")){
-      targetElm.parentElement.remove();
+      targetElm.parentElement.parentElement.remove();
       db.removeItem(itemId)
     }
 })
@@ -98,7 +99,7 @@ searchInput.addEventListener('input', function(e) {
         item.phone = item.phone.toUpperCase();
         return item;
     })
-    console.log(lowrCasePeople);
+
     list.innerHTML = "";
     if(keywors.length <= 2){
         searchData = [];
@@ -115,7 +116,6 @@ function searchView(allData, keywords){
         for(i in item) {
           if(item[i].indexOf(keywords)!=-1) {
             if (searchData.some(i => i.phone === item.phone)) {
-                console.log(searchData)
                 return
             }
             searchData.push(item);
@@ -136,3 +136,7 @@ function init(){
 }
 
 init()
+
+})()
+
+addPerson;
