@@ -4,6 +4,7 @@ const surName = document.querySelector('#surName');
 const phone = document.querySelector('#phone');
 const list = document.querySelector('#person-list');
 const searchInput = document.querySelector('#searchPerson');
+const addPersonBtn = document.querySelector('.add-person-btn');
 let searchData = [];
 
 class DBManager {
@@ -50,9 +51,7 @@ function addPersonToList(person) {
     list.innerHTML += html;
 }
 
-
-
-document.querySelector(".add-person-btn").addEventListener('click',function(){
+addPersonBtn.addEventListener('click',function(){
     const person = {
         name: name.value,
         surName: surName.value,
@@ -93,32 +92,52 @@ searchInput.addEventListener('input', function(e) {
     let keywors = e.target.value;
     let db = new DBManager();
     let people = db.getItem();
+    let lowrCasePeople = people.map(item => {
+        item.name = item.name.toUpperCase();
+        return item;
+    })
+    console.log(lowrCasePeople);
     list.innerHTML = "";
     if(keywors.length <= 2){
         searchData = [];
         init();
         return
     }
-    searchView(people, keywors);
+    searchView(lowrCasePeople, keywors.toUpperCase());
     
   });
 
-function searchView(allData, keywords){
+  function searchView(allData, keywords){
     allData.forEach(item => {
-        for(key in item) {
-          if(item[key].indexOf(keywords)!=-1) {
+        if(item.name.indexOf(keywords)!=-1) {
             if (searchData.some(i => i.phone === item.phone)) {
                 console.log(searchData)
                 return
             }
-            searchData.push(item);
-          }
+        searchData.push(item);
         }
       });
     searchData.forEach(person => {
         addPersonToList(person)
     });
 }
+
+// function searchView(allData, keywords){
+//     allData.forEach(item => {
+//         for(i in item) {
+//           if(item[i].indexOf(keywords.toLowerCase())!=-1) {
+//             if (searchData.some(i => i.phone.toLowerCase() === item.phone.toLowerCase())) {
+//                 console.log(searchData)
+//                 return
+//             }
+//             searchData.push(item);
+//           }
+//         }
+//       });
+//     searchData.forEach(person => {
+//         addPersonToList(person)
+//     });
+// }
 
 function init(){
     let db = new DBManager();
