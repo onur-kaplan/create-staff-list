@@ -1,22 +1,25 @@
-const name = document.getElementById('name');
-const surName = document.getElementById('surName');
-const phone = document.getElementById('phone');
-const list = document.getElementById('person-list');
+const dbName = "people";
+const name = document.querySelector('#name');
+const surName = document.querySelector('#surName');
+const phone = document.querySelector('#phone');
+const list = document.querySelector('#person-list');
+const searchInput = document.querySelector('#searchPerson');
+let searchData = [];
 
 class DBManager {
     getItem(){
         let people;
-        if(localStorage.getItem('people')===null){
+        if(localStorage.getItem(dbName)===null){
             people=[];
             return people;
         }
-        people = JSON.parse(localStorage.getItem('people'));
+        people = JSON.parse(localStorage.getItem(dbName));
         return people;
     }
     setItem(person){
         let people = this.getItem();
         people.push(person);
-        localStorage.setItem('people', JSON.stringify(people));
+        localStorage.setItem(dbName, JSON.stringify(people));
     }
     findItem(person){
         if (this.getItem().some(item => item.phone === person)) {
@@ -24,15 +27,13 @@ class DBManager {
         }
     }
     updateItem(data){
-        localStorage.setItem('people', JSON.stringify(data));
+        localStorage.setItem(dbName, JSON.stringify(data));
     }
     removeItem(id){
-        let addedPerson = this.getItem()
-        let position = addedPerson.map(e => { 
-            return e.phone; }
-            ).indexOf(id);
-        addedPerson.splice(position,1);
-        this.updateItem(addedPerson);
+        let people = this.getItem()
+        let position = people.findIndex(e => e.phone === id);
+        people.splice(position,1);
+        this.updateItem(people);
     }
 
 }
@@ -87,6 +88,37 @@ list.addEventListener("click", function(e){
       db.removeItem(itemId)
     }
 })
+
+searchInput.addEventListener('input', function(e) {
+    let keywors = e.target.value;
+    let db = new DBManager();
+    let people = db.getItem();
+    list.innerHTML = "";
+    if(keywors.length <= 2){
+        searchData = [];
+        init();
+        return
+    }
+    searchView(people, keywors);
+    
+  });
+
+function searchView(allData, keywords){
+    allData.forEach(item => {
+        for(key in item) {
+          if(item[key].indexOf(keywords)!=-1) {
+            if (searchData.some(i => i.phone === item.phone)) {
+                console.log(searchData)
+                return
+            }
+            searchData.push(item);
+          }
+        }
+      });
+    searchData.forEach(person => {
+        addPersonToList(person)
+    });
+}
 
 function init(){
     let db = new DBManager();
