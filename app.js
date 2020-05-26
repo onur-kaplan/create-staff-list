@@ -22,8 +22,8 @@ class DBManager {
         people.push(person);
         localStorage.setItem(dbName, JSON.stringify(people));
     }
-    findItem(person){
-        if (this.getItem().some(item => item.phone === person)) {
+    findItem(phone){
+        if (this.getItem().some(item => item.phone === phone)) {
             return true;
         }
     }
@@ -94,6 +94,8 @@ searchInput.addEventListener('input', function(e) {
     let people = db.getItem();
     let lowrCasePeople = people.map(item => {
         item.name = item.name.toUpperCase();
+        item.surName = item.surName.toUpperCase();
+        item.phone = item.phone.toUpperCase();
         return item;
     })
     console.log(lowrCasePeople);
@@ -107,37 +109,23 @@ searchInput.addEventListener('input', function(e) {
     
   });
 
-  function searchView(allData, keywords){
+
+function searchView(allData, keywords){
     allData.forEach(item => {
-        if(item.name.indexOf(keywords)!=-1) {
+        for(i in item) {
+          if(item[i].indexOf(keywords)!=-1) {
             if (searchData.some(i => i.phone === item.phone)) {
                 console.log(searchData)
                 return
             }
-        searchData.push(item);
+            searchData.push(item);
+          }
         }
       });
     searchData.forEach(person => {
         addPersonToList(person)
     });
 }
-
-// function searchView(allData, keywords){
-//     allData.forEach(item => {
-//         for(i in item) {
-//           if(item[i].indexOf(keywords.toLowerCase())!=-1) {
-//             if (searchData.some(i => i.phone.toLowerCase() === item.phone.toLowerCase())) {
-//                 console.log(searchData)
-//                 return
-//             }
-//             searchData.push(item);
-//           }
-//         }
-//       });
-//     searchData.forEach(person => {
-//         addPersonToList(person)
-//     });
-// }
 
 function init(){
     let db = new DBManager();
